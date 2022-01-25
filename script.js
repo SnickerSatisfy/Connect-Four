@@ -4,7 +4,7 @@ const topCells = document.querySelectorAll(".cell.row-top");
 const resetButton = document.querySelector(".reset");
 const statusSpan = document.querySelector(".status");
 
-// columns
+// Columns
 const column0 = [
   allCells[35],
   allCells[28],
@@ -70,7 +70,7 @@ const column6 = [
 ];
 const columns = [column0, column1, column2, column3, column4, column5, column6];
 
-// rows
+// Rows
 const topRow = [
   topCells[0],
   topCells[1],
@@ -135,3 +135,52 @@ const row5 = [
   allCells[41],
 ];
 const rows = [row0, row1, row2, row3, row4, row5, topRow];
+
+//Global Variables
+let gameOn = true;
+let yellowTurn = true; //If it is true then it is yellows turn otherwise it is red
+
+//Functions
+//Turns the DOM token into an array
+const getClassListArray = (cell) => {
+  const classList = cell.classList;
+  return [...classList];
+};
+
+//Gets the row and column of a cell
+const getCellLocation = (cell) => {
+  //gets the classList array
+  const classList = getClassListArray(cell);
+
+  //Get only row values for rows and column values for col
+  const rowClass = classList.find((className) => className.includes("row"));
+  const colClass = classList.find((className) => className.includes("col"));
+
+  //gets the number from the rowClass which is in the 4th index of the string
+  const rowIndex = rowClass[4];
+  const colIndex = colClass[4];
+
+  //Turns the index from string to an integer
+  const rowNum = parseInt(rowIndex, 10);
+  const colNum = parseInt(colIndex, 10);
+
+  return [rowNum, colNum];
+};
+
+//Event Handlers
+const handleCellMouseOver = (e) => {
+  const cell = e.target;
+  //Destructoring
+  const [rowIndex, colIndex] = getCellLocation(cell);
+
+  const topCell = topCells[colIndex];
+  topCell.classList.add(yellowTurn ? "yellow" : "red");
+};
+
+//Event Listeners
+//When you hover over a cell of that column, the chip will be shown of where it is going
+for (const row of rows) {
+  for (const cell of row) {
+    cell.addEventListener("mouseover", handleCellMouseOver);
+  }
+}
