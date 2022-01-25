@@ -168,19 +168,29 @@ const getCellLocation = (cell) => {
 };
 
 //Event Handlers
+//When you hover over a cell of that column, the chip will be shown of where it is going
 const handleCellMouseOver = (e) => {
   const cell = e.target;
-  //Destructoring
   const [rowIndex, colIndex] = getCellLocation(cell);
 
   const topCell = topCells[colIndex];
   topCell.classList.add(yellowTurn ? "yellow" : "red");
 };
 
+//When you not hover over a cell, the chip will dissapear.
+const handleCellMouseOut = (e) => {
+  const cell = e.target;
+  const [rowIndex, colIndex] = getCellLocation(cell);
+
+  const topCell = topCells[colIndex];
+  topCell.classList.remove("yellow");
+  topCell.classList.remove("red");
+};
+
 //Event Listeners
-//When you hover over a cell of that column, the chip will be shown of where it is going
 for (const row of rows) {
   for (const cell of row) {
     cell.addEventListener("mouseover", handleCellMouseOver);
+    cell.addEventListener("mouseout", handleCellMouseOut);
   }
 }
