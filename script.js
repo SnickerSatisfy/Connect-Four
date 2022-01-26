@@ -189,9 +189,67 @@ const clearColorFromTop = (colIndex) => {
   topCell.classList.remove("red");
 };
 
+//Gets the color of the cell were checking
+const getColorOfCell = (cell) => {
+  const classList = getClassListArray(cell);
+  if (classList.includes("yellow")) return "yellow";
+  if (classList.includes("red")) return "red";
+  return null;
+};
+
+//Highlights the winning chips
+const checkWinningCells = (cells) => {
+  if (cells.length < 4) return;
+
+  gameOn = false;
+  for (const cell of cells) {
+    cell.classList.add("win");
+  }
+  statusSpan.textContent = `${yellowTurn ? "Yellow" : "Red"} has won the game!`;
+};
+
+//Checks if someone won or not
+const checkStatusOfGame = (cell) => {
+  const color = getColorOfCell(cell);
+  if (!color) return;
+  const [rowIndex, colIndex] = getCellLocation(cell);
+
+  //Horizontal
+  let winningCells = [cell];
+  let rowCheck = rowIndex;
+  let colCheck = colIndex - 1;
+
+  //left side
+  while (colCheck >= 0) {
+    const cellCheck = rows[rowCheck][colCheck];
+    if (getColorOfCell(cellCheck) === color) {
+      winningCells.push(cellCheck);
+      colCheck--;
+    } else {
+      break;
+    }
+  }
+
+  //right side
+  colCheck = colIndex + 1;
+  while (colCheck <= 6) {
+    const cellCheck = rows[rowCheck][colCheck];
+    if (getColorOfCell(cellCheck) === color) {
+      winningCells.push(cellCheck);
+      colCheck++;
+    } else {
+      break;
+    }
+  }
+
+  checkWinningCells(winningCells);
+};
+
 //Event Handlers
 //When you hover over a cell of that column, the chip will be shown of where it is going
 const handleCellMouseOver = (e) => {
+  if (!gameOn) return;
+
   const cell = e.target;
   const [rowIndex, colIndex] = getCellLocation(cell);
 
@@ -208,6 +266,8 @@ const handleCellMouseOut = (e) => {
 
 //Handles the logic of when you click on the cell
 const handleCellClick = (e) => {
+  if (!gameOn) return;
+
   const cell = e.target;
   const [rowIndex, colIndex] = getCellLocation(cell);
   const openCell = getOpenCellForCol(colIndex);
@@ -216,13 +276,15 @@ const handleCellClick = (e) => {
   if (!openCell) return;
 
   openCell.classList.add(yellowTurn ? "yellow" : "red");
-  // TODO: Checks the status of the game
+  checkStatusOfGame(openCell);
 
   //After clicking on a cell it is "next" turn
   yellowTurn = !yellowTurn;
   clearColorFromTop(colIndex);
-  const topCell = topCells[colIndex];
-  topCell.classList.add(yellowTurn ? "yellow" : "red");
+  if (gameOn) {
+    const topCell = topCells[colIndex];
+    topCell.classList.add(yellowTurn ? "yellow" : "red");
+  }
 };
 
 //Event Listeners
@@ -233,3 +295,18 @@ for (const row of rows) {
     cell.addEventListener("click", handleCellClick);
   }
 }
+
+//Resets everything
+resetButton.addEventListener("click", () => {
+  for (const row of rows) {
+    for (const cell of row) {
+      cell.classList.remove("yellow");
+      cell.classList.remove("red");
+      cell.classList.remove("win");
+    }
+  }
+
+  gameOn = true;
+  yellowTurn = true;
+  statusSpan.textContent = "";
+});
