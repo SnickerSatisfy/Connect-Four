@@ -199,13 +199,15 @@ const getColorOfCell = (cell) => {
 
 //Highlights the winning chips
 const checkWinningCells = (cells) => {
-  if (cells.length < 4) return;
+  if (cells.length < 4) return false;
 
   gameOn = false;
   for (const cell of cells) {
     cell.classList.add("win");
   }
   statusSpan.textContent = `${yellowTurn ? "Yellow" : "Red"} has won the game!`;
+
+  return true;
 };
 
 //Checks if someone won or not
@@ -242,7 +244,112 @@ const checkStatusOfGame = (cell) => {
     }
   }
 
-  checkWinningCells(winningCells);
+  let isWinningCombo = checkWinningCells(winningCells);
+  if (isWinningCombo) return;
+
+  //Vertical
+  winningCells = [cell];
+  rowCheck = rowIndex - 1;
+  colCheck = colIndex;
+
+  //left side
+  while (rowCheck >= 0) {
+    const cellCheck = rows[rowCheck][colCheck];
+    if (getColorOfCell(cellCheck) === color) {
+      winningCells.push(cellCheck);
+      rowCheck--;
+    } else {
+      break;
+    }
+  }
+
+  //right side
+  rowCheck = rowIndex + 1;
+  while (rowCheck <= 5) {
+    const cellCheck = rows[rowCheck][colCheck];
+    if (getColorOfCell(cellCheck) === color) {
+      winningCells.push(cellCheck);
+      rowCheck++;
+    } else {
+      break;
+    }
+  }
+
+  isWinningCombo = checkWinningCells(winningCells);
+  if (isWinningCombo) return;
+
+  //Diagonal "/"
+  winningCells = [cell];
+  rowCheck = rowIndex + 1;
+  colCheck = colIndex - 1;
+  while (colCheck >= 0 && rowCheck <= 5) {
+    const cellCheck = rows[rowCheck][colCheck];
+    if (getColorOfCell(cellCheck) === color) {
+      winningCells.push(cellCheck);
+      rowCheck++;
+      colCheck--;
+    } else {
+      break;
+    }
+  }
+  rowCheck = rowIndex - 1;
+  colCheck = colIndex + 1;
+  while (colCheck <= 6 && rowCheck >= 0) {
+    const cellCheck = rows[rowCheck][colCheck];
+    if (getColorOfCell(cellCheck) === color) {
+      winningCells.push(cellCheck);
+      rowCheck--;
+      colCheck++;
+    } else {
+      break;
+    }
+  }
+  isWinningCombo = checkWinningCells(winningCells);
+  if (isWinningCombo) return;
+
+  //Diagonal "\"
+  winningCells = [cell];
+  rowCheck = rowIndex - 1;
+  colCheck = colIndex - 1;
+  while (colCheck >= 0 && rowCheck >= 0) {
+    const cellCheck = rows[rowCheck][colCheck];
+    if (getColorOfCell(cellCheck) === color) {
+      winningCells.push(cellCheck);
+      rowCheck--;
+      colCheck--;
+    } else {
+      break;
+    }
+  }
+  rowCheck = rowIndex + 1;
+  colCheck = colIndex + 1;
+  while (colCheck <= 6 && rowCheck <= 5) {
+    const cellCheck = rows[rowCheck][colCheck];
+    if (getColorOfCell(cellCheck) === color) {
+      winningCells.push(cellCheck);
+      rowCheck++;
+      colCheck++;
+    } else {
+      break;
+    }
+  }
+  isWinningCombo = checkWinningCells(winningCells);
+  if (isWinningCombo) return;
+
+  //Check to see if we have a tie
+  const rowsWithoutTop = rows.slice(0, 6);
+  for (const row of rowsWithoutTop) {
+    for (const cell of row) {
+      const classList = getClassListArray(cell);
+
+      if (!classList.includes("yellow") && !classList.includes("red")) {
+        return;
+      }
+    }
+  }
+
+  gameOn = false;
+  statusSpan.textContent = "It is a TIE!!!!";
 };
 
 //Event Handlers

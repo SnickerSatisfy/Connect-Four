@@ -16,6 +16,7 @@ body {
 
 h1 {
   text-transform: uppercase;
+  font-family: monospace;
 }
 
 .game-board {
@@ -23,7 +24,7 @@ h1 {
   grid-template-columns: repeat(7, 1fr);
   grid-template-rows: repeat(7, 1fr);
   height: 700px;
-  margin: 10px 0 25px;
+  margin: 0px 0 25px;
   width: 700px;
 }
 
