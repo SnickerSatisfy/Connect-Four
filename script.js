@@ -167,6 +167,28 @@ const getCellLocation = (cell) => {
   return [rowNum, colNum];
 };
 
+//To see if we can put the chip on the first row of that column
+const getOpenCellForCol = (colIndex) => {
+  const cols = columns[colIndex];
+  const colWithoutTop = cols.slice(0, 6);
+
+  for (const cell of colWithoutTop) {
+    const classList = getClassListArray(cell);
+    if (!classList.includes("yellow") && !classList.includes("red")) {
+      return cell;
+    }
+  }
+
+  return null;
+};
+
+//Clears the colors from the hover chip so it can alternate colors every turn
+const clearColorFromTop = (colIndex) => {
+  const topCell = topCells[colIndex];
+  topCell.classList.remove("yellow");
+  topCell.classList.remove("red");
+};
+
 //Event Handlers
 //When you hover over a cell of that column, the chip will be shown of where it is going
 const handleCellMouseOver = (e) => {
@@ -181,10 +203,26 @@ const handleCellMouseOver = (e) => {
 const handleCellMouseOut = (e) => {
   const cell = e.target;
   const [rowIndex, colIndex] = getCellLocation(cell);
+  clearColorFromTop(colIndex);
+};
 
+//Handles the logic of when you click on the cell
+const handleCellClick = (e) => {
+  const cell = e.target;
+  const [rowIndex, colIndex] = getCellLocation(cell);
+  const openCell = getOpenCellForCol(colIndex);
+
+  //Do nothing when there is not an open cell
+  if (!openCell) return;
+
+  openCell.classList.add(yellowTurn ? "yellow" : "red");
+  // TODO: Checks the status of the game
+
+  //After clicking on a cell it is "next" turn
+  yellowTurn = !yellowTurn;
+  clearColorFromTop(colIndex);
   const topCell = topCells[colIndex];
-  topCell.classList.remove("yellow");
-  topCell.classList.remove("red");
+  topCell.classList.add(yellowTurn ? "yellow" : "red");
 };
 
 //Event Listeners
@@ -192,5 +230,6 @@ for (const row of rows) {
   for (const cell of row) {
     cell.addEventListener("mouseover", handleCellMouseOver);
     cell.addEventListener("mouseout", handleCellMouseOut);
+    cell.addEventListener("click", handleCellClick);
   }
 }
