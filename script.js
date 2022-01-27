@@ -252,7 +252,7 @@ const checkStatusOfGame = (cell) => {
   rowCheck = rowIndex - 1;
   colCheck = colIndex;
 
-  //left side
+  //bottom
   while (rowCheck >= 0) {
     const cellCheck = rows[rowCheck][colCheck];
     if (getColorOfCell(cellCheck) === color) {
@@ -263,7 +263,7 @@ const checkStatusOfGame = (cell) => {
     }
   }
 
-  //right side
+  //top
   rowCheck = rowIndex + 1;
   while (rowCheck <= 5) {
     const cellCheck = rows[rowCheck][colCheck];
